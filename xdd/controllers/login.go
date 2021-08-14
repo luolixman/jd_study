@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/beego/beego/v2/core/logs"
-	"github.com/cdle/jd_study/xdd/models"
+	"github.com/luolixman/jd_study/xdd/models"
 
 	"github.com/beego/beego/v2/client/httplib"
 	qrcode "github.com/skip2/go-qrcode"
@@ -120,7 +120,6 @@ func (c *LoginController) GetQrcode() {
 	tgid := c.GetQueryInt("tgid")
 	qqid := c.GetQueryInt("qqid")
 	qqgid := c.GetQueryInt("qqgid")
-	qqguid := c.GetQueryInt("qqguid")
 	id := 0
 	bot := ""
 	if tgid != 0 {
@@ -135,7 +134,7 @@ func (c *LoginController) GetQrcode() {
 		bot = "qqg"
 		id = qqgid
 	}
-	JdCookieRunners.Store(st.Token, []interface{}{cookie, okl_token, bot, id, qqguid})
+	JdCookieRunners.Store(st.Token, []interface{}{cookie, okl_token, bot, id})
 	if bot != "" {
 		c.Ctx.ResponseWriter.Write(data)
 		return
@@ -159,7 +158,6 @@ func init() {
 					okl_token := vv[1].(string)
 					bot := vv[2].(string)
 					id := vv[3].(int)
-					guid := vv[4].(int)
 					// fmt.Println(jd_token, cookie, okl_token)
 					result, ck := CheckLogin(jd_token, cookie, okl_token)
 					// fmt.Println(result)
@@ -167,12 +165,11 @@ func init() {
 					case "成功":
 						if bot == "qq" {
 							go models.SendQQ(int64(id), "扫码成功")
-							ck.Update(models.QQ, id)
+							ck.Updates(models.QQ, id)
 						} else if bot == "tg" {
 							go models.SendTgMsg(int(id), "扫码成功")
 						} else if bot == "qqg" {
-							ck.Update(models.QQ, guid)
-							go models.SendQQGroup(int64(id), int64(guid), "扫码成功")
+							go models.SendQQGroup(int64(id), "扫码成功")
 						}
 					case "授权登录未确认":
 					case "":
@@ -182,7 +179,7 @@ func init() {
 						} else if bot == "tg" {
 							go models.SendTgMsg(int(id), "扫码失败")
 						} else if bot == "qqg" {
-							go models.SendQQGroup(int64(id), int64(guid), "扫码失败")
+							go models.SendQQGroup(int64(id), "扫码失败")
 						}
 					}
 				}
@@ -210,8 +207,8 @@ func (c *LoginController) Query() {
 				pin := v.([]interface{})[0].(string)
 				c.SetSession("pin", pin)
 				if note := c.GetString("note"); note != "" {
-					if ck, err := models.GetJdCookie(pin); err == nil {
-						ck.Update(models.Note, note)
+					if ck := models.GetJdCookie(pin); ck != nil {
+						ck.Updates(models.Note, note)
 					}
 				}
 				// if strings.Contains(models.Config.Master, pin) {
@@ -272,13 +269,13 @@ func CheckLogin(token, cookie, okl_token string) (string, *models.JdCookie) {
 			PtKey: pt_key,
 			PtPin: pt_pin,
 		}
-		if nck, err := models.GetJdCookie(ck.PtPin); err == nil {
-			nck.InPool(ck.PtKey)
+		if nck := models.GetJdCookie(ck.PtPin); nck != nil {
+			ck.ToPool(ck.PtKey)
 			msg := fmt.Sprintf("更新账号，%s", ck.PtPin)
 			(&models.JdCookie{}).Push(msg)
 			logs.Info(msg)
 		} else {
-			models.NewJdCookie(&ck)
+			models.NewJdCookie(ck)
 			msg := fmt.Sprintf("添加账号，%s", ck.PtPin)
 			(&models.JdCookie{}).Push(msg)
 			logs.Info(msg)
