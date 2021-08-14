@@ -11,9 +11,9 @@ import (
 	"github.com/beego/beego/v2/server/web/context"
 
 	"github.com/beego/beego/v2/server/web"
-	"github.com/cdle/jd_study/xdd/controllers"
-	"github.com/cdle/jd_study/xdd/models"
-	"github.com/cdle/jd_study/xdd/qbot"
+	"github.com/luolixman/jd_study/xdd/controllers"
+	"github.com/luolixman/jd_study/xdd/models"
+	"github.com/luolixman/jd_study/xdd/qbot"
 )
 
 var theme = ""
@@ -27,7 +27,7 @@ func main() {
 	})
 	web.Get("/", func(ctx *context.Context) {
 		if models.Config.Theme == "" {
-			models.Config.Theme = models.GhProxy + "https://raw.githubusercontent.com/U188/web/main/random.html"
+			models.Config.Theme = models.GhProxy + "https://raw.githubusercontent.com/xyh977732241/xdd_front_theme/master/index.html"
 		}
 		if theme != "" {
 			ctx.WriteString(theme)

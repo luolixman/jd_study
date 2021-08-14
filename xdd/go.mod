@@ -1,16 +1,17 @@
-module github.com/cdle/jd_study/xdd
+module github.com/luolixman/jd_study/xdd
 
 go 1.16
 
 replace github.com/willf/bitset v1.2.0 => github.com/bits-and-blooms/bitset v1.2.0
 
-replace github.com/Mrs4s/go-cqhttp v1.0.0-beta5 => github.com/cdle/go-cqhttp v1.1.2
+replace github.com/Mrs4s/go-cqhttp v1.0.0-beta5 => github.com/luolixman/go-cqhttp v1.1.2
 
 require (
 	github.com/Baozisoftware/qrcode-terminal-go v0.0.0-20170407111555-c0650d8dff0f
 	github.com/Mrs4s/MiraiGo v0.0.0-20210726103104-1d68826cef0e
 	github.com/Mrs4s/go-cqhttp v1.0.0-beta5
 	github.com/beego/beego/v2 v2.0.1
+	github.com/boltdb/bolt v1.3.1
 	github.com/buger/jsonparser v1.1.1
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
@@ -31,8 +32,4 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/tucnak/telebot.v2 v2.3.5
 	gopkg.in/yaml.v2 v2.2.8
-	gorm.io/driver/mysql v1.1.2
-	gorm.io/driver/postgres v1.1.0
-	gorm.io/driver/sqlite v1.1.4
-	gorm.io/gorm v1.21.13
 )
